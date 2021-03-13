@@ -69,15 +69,20 @@ function createTable(users) {
     users.forEach(u => {
         table.innerHTML += `<tr data-id="${u.id}">
            <td class="id-span"><span>${u.id}</span></td>
-           <td ><span>${u.firstname}</span></td>
-           <td><span>${u.lastname}</span></td>
-           <td><span>${u.capsule}</span></td>
-           <td><span>${u.age}</span></td>
-           <td><span>${u.city}</span></td>
-           <td><span>${u.gender}</span></td>
-           <td><span>${u.hobby}</span></td>
-           <td class="td-btns"><button class ="editBtn">edit</button>
-           <button class ="deleteBtn">delete</button>
+           <td class ="firstname"><span>${u.firstname}</span></td>
+           <td class ="lastname"><span>${u.lastname}</span></td>
+           <td class ="capsule"><span>${u.capsule}</span></td>
+           <td class ="age"><span>${u.age}</span></td>
+           <td class ="city"><span>${u.city}</span></td>
+           <td class ="gender"><span>${u.gender}</span></td>
+           <td class ="hobby"><span>${u.hobby}</span></td>
+           <td class="td-btns-before switch-btn">
+               <button class ="editBtn">edit</button>
+               <button class ="deleteBtn">delete</button>
+           </td>
+           <td class="td-btns-after switch-btn diplayswitch">
+               <button class ="submit-btn">Submit</button>
+               <button class ="cancel-btn">Cancel</button>
            </td>
         </tr>`
     })
@@ -97,55 +102,90 @@ function addEventButtons() {
     for (const btn of editBtn) {
         btn.addEventListener('click', handleEditUser)
     }
-}
+    const submitBtn = document.querySelectorAll('.submit-btn')
+    for (const btn of submitBtn) {
+        btn.addEventListener('click', handleSubmit)
+    }
+    const cancelBtn = document.querySelectorAll('.cancel-btn')
+    for (const btn of cancelBtn) {
+        btn.addEventListener('click', handleCancel)
+    }
 
+}
 /*
 -----------------------------------------Handle Actions-----------------------------------
 */
 
-//-----Delete  Function
+//----------------Delete  Function-----------
 function handleDeleteUser(e) {
     let item = e.target.closest('tr')
     item.remove()
-    const index = usersInfo.map(item => item.id).indexOf(getID(item))
+    const index = findIndexInData(item, usersInfo)
     usersInfo.splice(index, 1);
     updateLocal(usersInfo)
 
 }
-
+// -----------------Edit Function------------
 function handleEditUser(e) {
-    let tds = e.target.closest('tr').children
-    console.log(tds)
+    let item = e.target.closest('tr')
+    const index = findIndexInData(item, usersInfo)
+    let tds = item.children
     for (const td of tds) {
-        if (!(td.classList.contains("td-btns") || (td.classList.contains("id-span")))) {
+        if (!(td.classList.contains("switch-btn") || (td.classList.contains("id-span")))) {
             td.innerHTML = `<input type="text" value="${td.innerText}">`
-        } else if (td.classList.contains("td-btns")) {
-            td.innerHTML = `<button class ="submit-btn">Submit</button>
-            <button class ="cancel-btn">Cancel</button>`
+            td.addEventListener('change', (e) => {
+                let parent = e.target.parentNode;
+                let classNodes = parent.className;
+                usersInfo[index][`${classNodes}`] = e.target.value
+
+            })
         }
     }
-    const submitBtn = document.querySelectorAll('.submit-btn')
-    for(const btn of submitBtn){
-        btn.addEventListener('click', saveValue)
-    }
-    const cancelBtn = document.querySelector('.cancel-btn')
+    tds[9].classList.remove('diplayswitch')
+    item.insertBefore(tds[9], tds[8]);
+    tds[9].classList.add('diplayswitch')
 }
-function saveValue(e) {
-
-    let tds = e.target.closest('tr').children
-    console.log(tds)
+//--------------- Submit function-------------
+function handleSubmit(e) {
+    let item = e.target.closest('tr')
+    let tds = item.children
     for (const td of tds) {
-        console.log(td);
-        if (!(td.classList.contains("td-btns") || (td.classList.contains("id-span")))) {
+        if (!(td.classList.contains("switch-btn") || (td.classList.contains("id-span")))) {
             td.innerHTML = `<span>${td.firstElementChild.value}</span>`
+            updateLocal(usersInfo)
         }
     }
+    console.log(usersInfo);
+    tds[9].classList.remove('diplayswitch')
+    item.insertBefore(tds[9], tds[8]);
+    tds[9].classList.add('diplayswitch')
+}
+//--------------- Cancel function-------------
+function handleCancel(e) {
+    let getCurrentLocal = JSON.parse(localStorage.getItem('userObj'))
+    let item = e.target.closest('tr')
+    let tds = item.children
+    const index = findIndexInData(item, getCurrentLocal)
+    let obj = getCurrentLocal[index];
+    let objVal = Object.values(obj)
+    for (let i = 0; i < tds.length; i++) {
+        if (!(tds[i]).classList.contains("switch-btn")) {
+            tds[i].innerHTML = `<span>${objVal[i]}</span>`
+        }
+    }
+    tds[9].classList.remove('diplayswitch')
+    item.insertBefore(tds[9], tds[8]);
+    tds[9].classList.add('diplayswitch')
 }
 
 
 
 
-//----get ID function
+
+//----get ID ,Index functions-----
 function getID(element) {
     return parseInt(element.getAttribute('data-id'))
+}
+function findIndexInData(el, data) {
+    return data.map(item => item.id).indexOf(getID(el))
 }
