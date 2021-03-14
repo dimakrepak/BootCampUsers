@@ -1,11 +1,121 @@
-*{
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+body {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  text-align: center;
+  flex-flow: column;
+  font-family: "Quicksand", sans-serif;
+  height: 100vh;
 }
-
-
-
 .diplayswitch {
   display: none;
+}
+table {
+  border-collapse: collapse;
+  font-size: 0.9em;
+  font-family: "Quicksand", sans-serif;
+  min-width: 1000px;
+  width: 70vw;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}
+table thead tr {
+  background-color: #543eb3;
+  color: #ffffff;
+  text-align: center;
+}
+table th,
+table td {
+  padding: 1px 10px;
+}
+table tbody tr {
+  border-bottom: 1px solid #dddddd;
+}
+
+table tbody tr:nth-child(even) {
+  background-color: #f3f3f3;
+}
+
+table tbody tr:last-of-type {
+  border-bottom: 2px solid #543eb3;
+}
+button {
+  border: none;
+  height: 20px;
+  width: auto;
+  font-weight: 600;
+  font-size: 16px;
+  font-family: "Quicksand", sans-serif;
+  background-color: transparent;
+  margin-left: 5px;
+  margin-right: 5px;
+  cursor: pointer;
+}
+.deleteBtn {
+  color: rgb(212, 0, 0);
+}
+.editBtn {
+  color: #543eb3;
+}
+.submit-btn {
+  color: rgb(27, 228, 0);
+}
+.cancel-btn {
+  color: rgb(95, 95, 95);
+}
+.tput {
+  width: 100px;
+  outline: none;
+  border: 1px solid rgb(197, 197, 197);
+  font-size: 12px;
+  font-family: "Quicksand", sans-serif;
+}
+
+.search {
+  display: flex;
+  justify-content: space-around;
+  height: 40px;
+  border-radius: 40px;
+  background-color: rgb(206, 206, 206);
+  text-align: center;
+
+  /* padding-left: 2px; */
+}
+.search-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: rgb(238, 238, 238);
+  text-decoration: none;
+}
+.search:hover > .search-txt {
+  width: 245px;
+}
+.search:hover > .types{
+width: 40px;
+}
+.search-txt {
+  border: none;
+  background: none;
+  outline: none;
+  color: rgb(0, 0, 0);
+  font-size: 16px;
+  line-height: 40px;
+  list-style: none;
+  transition: 0.4s;
+  width: 0px;
+}
+.search-txt::placeholder {
+  margin-left: 5px;
+}
+.types {
+  border-bottom-left-radius: 40px;
+  border-top-left-radius: 40px;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  background-color: #a18dfc;
+  width: 0;
 }

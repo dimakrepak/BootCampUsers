@@ -3,12 +3,16 @@
 const usersEndPoint = `https://appleseed-wa.herokuapp.com/api/users/`
 const container = document.querySelector('.container')
 let table = document.createElement('table');
+const tHead = document.createElement('thead')
+const tBody = document.createElement('tbody')
+const select = document.querySelector('.types')
+
+table.appendChild(tHead)
+table.appendChild(tBody)
 container.appendChild(table)
 
 let usersInfo
 let getLocal = JSON.parse(localStorage.getItem('userObj'))
-
-
 
 /*
 --------------------------------------------GLOBAL AND STORAGE---------------------------
@@ -18,13 +22,13 @@ function updateLocal(info) {
     localStorage.setItem('userObj', JSON.stringify(info))
 }
 async function workWithGlobal() {
+    usersInfo = await getUsers()
 
     if ((getLocal === null) || getLocal.length === 0) {
-        usersInfo = await getUsers()
         createTable(usersInfo)
     } else {
-        usersInfo = getLocal
         createTable(getLocal)
+        usersInfo = getLocal
     }
 
 }
@@ -58,6 +62,9 @@ async function getUsers() {
                 hobby: extraInfo.hobby,
             }
         }))
+    if ((getLocal === null) || getLocal.length === 0) {
+        localStorage.setItem('userObj', JSON.stringify(users))
+    }
     return users;
 }
 /*
@@ -65,9 +72,21 @@ async function getUsers() {
 */
 
 function createTable(users) {
-    table.innerHTML = ''
+    tHead.innerHTML = `
+               <tr>
+                  <th>ID</th>
+                  <th>FirstName</th>
+                  <th>LastName</th>
+                  <th>Capsule</th> 
+                  <th>Age</th>
+                  <th>City</th>
+                  <th>Gender</th>
+                  <th>Hobby</th>
+                  <th></th>
+               </tr>`
     users.forEach(u => {
-        table.innerHTML += `<tr data-id="${u.id}">
+        tBody.innerHTML += `
+          <tr data-id="${u.id}">
            <td class="id-span"><span>${u.id}</span></td>
            <td class ="firstname"><span>${u.firstname}</span></td>
            <td class ="lastname"><span>${u.lastname}</span></td>
@@ -79,12 +98,13 @@ function createTable(users) {
            <td class="td-btns-before switch-btn">
                <button class ="editBtn">edit</button>
                <button class ="deleteBtn">delete</button>
-           </td>
-           <td class="td-btns-after switch-btn diplayswitch">
+            </td>
+            <td class="td-btns-after switch-btn diplayswitch">
                <button class ="submit-btn">Submit</button>
                <button class ="cancel-btn">Cancel</button>
            </td>
-        </tr>`
+         </tr>
+        `
     })
     addEventButtons()
 }
@@ -110,7 +130,6 @@ function addEventButtons() {
     for (const btn of cancelBtn) {
         btn.addEventListener('click', handleCancel)
     }
-
 }
 /*
 -----------------------------------------Handle Actions-----------------------------------
@@ -132,7 +151,7 @@ function handleEditUser(e) {
     let tds = item.children
     for (const td of tds) {
         if (!(td.classList.contains("switch-btn") || (td.classList.contains("id-span")))) {
-            td.innerHTML = `<input type="text" value="${td.innerText}">`
+            td.innerHTML = `<input type="text" class="tput" value="${td.innerText}">`
             td.addEventListener('change', (e) => {
                 let parent = e.target.parentNode;
                 let classNodes = parent.className;
@@ -165,11 +184,11 @@ function handleCancel(e) {
     let getCurrentLocal = JSON.parse(localStorage.getItem('userObj'))
     let item = e.target.closest('tr')
     let tds = item.children
-    const index = findIndexInData(item, getCurrentLocal)
-    let obj = getCurrentLocal[index];
-    let objVal = Object.values(obj)
     for (let i = 0; i < tds.length; i++) {
         if (!(tds[i]).classList.contains("switch-btn")) {
+            const index = findIndexInData(item, getCurrentLocal)
+            let obj = getCurrentLocal[index];
+            let objVal = Object.values(obj)
             tds[i].innerHTML = `<span>${objVal[i]}</span>`
         }
     }
@@ -177,8 +196,46 @@ function handleCancel(e) {
     item.insertBefore(tds[9], tds[8]);
     tds[9].classList.add('diplayswitch')
 }
+/*
+-----------------------------------------Search Function------------------------
+*/
+
+//----Create Options to dropdown-------------
+select.innerHTML = `
+   <option value="firstname">First Name</option>
+   <option value="lastname">Last Name</option>
+   <option value="capsule">Capsule</option>
+   <option value="age">Age</option>
+   <option value="city">City</option>
+   <option value="gender">Gender</option>
+   <option value="hobby">Hobby</option>`
 
 
+const searchBox = document.querySelector('.search')
+searchBox.addEventListener('change', handleSearch);
+
+function handleSearch(e) {
+    if (e.target.classList.contains("types")) selectFromDropDown(e);
+    if (e.target.classList.contains("search-txt")) searchByvalue(e);
+}
+
+function searchByvalue(e) {
+    return e.target.value;
+
+}
+function selectFromDropDown(e) {
+    console.log(e.target.value);
+    let byvalue = getLocal.filter(u => {
+        return u[`${e.target.value}`].includes(searchByvalue)
+    })
+
+    console.log(byvalue);
+
+
+
+
+
+}
 
 
 
